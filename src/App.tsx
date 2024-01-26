@@ -1,4 +1,3 @@
-import './App.css'
 import Link from './features/link/link';
 import { Links } from './app/constants';
 import UserIcon from './features/userIcon/userIcon';

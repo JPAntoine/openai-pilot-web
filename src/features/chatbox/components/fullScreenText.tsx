@@ -11,10 +11,10 @@ const FullScreenText: React.FC<FullScreenTextProps> = ({
   showSpinner = false, // Default value for optional prop
 }) => {
   return (
-    <div className="flex w-screen h-screen items-center justify-center bg-black text-white font-sans text-4xl font-bold gap-4">
+    <div className="flex w-screen h-screen items-center justify-center bg-background text-text-primary font-sans text-4xl font-bold gap-4">
       {showSpinner && (
         <ClipLoader
-          color="#FFFFFF"
+          className={`loader-primary`}
           size={64} // Using size instead of w-16 h-16 for consistency
           speedMultiplier={0.5}
         />
@@ -22,6 +22,7 @@ const FullScreenText: React.FC<FullScreenTextProps> = ({
       {children}
     </div>
   );
+  
 };
 
 export default FullScreenText;

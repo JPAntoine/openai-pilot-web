@@ -14,7 +14,7 @@ const LegalNotification: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
       link: Links.GEN_AI_POLICY,
       icon: <Alert className="self-center"></Alert>,
       listItems: [
-        { text: "IMPORTANT: This tool includes SCE internal data..." },
+        { text: "IMPORTANT: This tool includes proprietary data..." },
         {
           text: "Information Governance Policy",
           link: Links.INFORMATION_GOVERNANCE_POLICY,
@@ -24,7 +24,7 @@ const LegalNotification: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
     },
     {
       title: "Tips For Use",
-      explanation: "This tool is for SCE employee use only...",
+      explanation: "This tool is for employee use only...",
       link: Links.FAQs,
       icon: <Info className="self-center"></Info>,
       listItems: [

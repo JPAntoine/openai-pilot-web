@@ -22,7 +22,8 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
     placement: "top",
   });
 
-  const buttonClass = `border-none !bg-sce-grey-100 !text-sce-grey-700 !rounded-full px-6 h-[2.375rem] ${className || ''}`;
+  const buttonClass = `border-none text-text-primary rounded-full px-6 h-[2.375rem] ${className || ''}`;
+
 
   return (
     <div ref={refs.setFloating} style={floatingStyles}>

@@ -45,7 +45,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
 
   return (
     <div
-      className="bg-sce-grey-800 flex w-full items-center gap-2 rounded-md px-8 py-2 mt-auto"
+      className="bg-primary flex w-full items-center gap-2 rounded-md px-8 py-2 mt-auto"
       ref={setAnchor}
     >
       <div>
@@ -56,7 +56,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
           anchor={anchor}
           onClick={() => stopGeneration && stopGeneration()}
         >
-          <span className="px-2 text-[1.0625rem] leading-5 font-sf font-bold">
+          <span className="px-2 text-[1.0625rem] leading-5 font-sf font-bold text-text-primary">
             Stop Generating
           </span>
         </FloatingButton>
@@ -67,25 +67,25 @@ const MessageBar: React.FC<MessageBarProps> = ({
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Ask your question..."
-        className="h-full w-full flex-grow resize-none bg-transparent p-2 text-white outline-none"
+        className="h-full w-full flex-grow resize-none bg-transparent p-2 text-text-primary outline-none"
         disabled={userRetryCountdown > 0}
       />
       {isProcessingCompletion || userRetryCountdown > 0 ? (
         <div className="flex h-12 max-w-min items-center justify-center gap-1 border-none p-2">
-          <PulseLoader size={4} color="#ffffff" loading={true} />
+          <PulseLoader size={4} color="#F4F5F7" loading={true} />
         </div>
       ) : (
         <>
           <button
             id="ellipses-button"
-            className={"text-white w-5 h-5"}
+            className="text-text-primary w-5 h-5"
             ref={setMenuButton}
             onClick={() => setIsPopoverOpen(!isPopoverOpen)}
           >
             <Ellipses />
           </button>
           <button
-            className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-white font-bold text-white transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
+            className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-text-primary font-bold text-text-primary transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
             onClick={onSubmit}
             disabled={userRetryCountdown > 0 || isProcessingCompletion}
           >
@@ -103,6 +103,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
       />
     </div>
   );
-}
+};
+
 
 export default MessageBar;

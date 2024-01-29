@@ -16,11 +16,11 @@ const MessageStream: React.FC<React.HTMLAttributes<HTMLElement> & MessageStreamP
 }) => {
   const inFlightMessage = useSelector((state: RootState) => state.conversation.inFlightMessage);
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden hover:overflow-auto px-4" {...rest}>
+    <div className="flex h-full flex-col gap-4 overflow-hidden hover:overflow-auto px-4 bg-secondary" {...rest}>
       {messages?.map((message: Message) => (
         <ChatMessage message={message} key={message.id} />
       ))}
-
+  
       {messages?.slice(-2)[0]?.content !== inFlightMessage && (
         <>
           {inFlightMessage && (
@@ -28,7 +28,7 @@ const MessageStream: React.FC<React.HTMLAttributes<HTMLElement> & MessageStreamP
               message={{ id: "inTransit", role: "user", content: inFlightMessage }}
             />
           )}
-
+  
           {isLoading && (
             <ChatMessage
               message={{ id: "thinking", role: "assistant", content: "I'm thinking..." }}
@@ -36,7 +36,7 @@ const MessageStream: React.FC<React.HTMLAttributes<HTMLElement> & MessageStreamP
           )}
         </>
       )}
-
+  
       {isError && (
         <ChatMessage
           message={{ id: "error", role: "assistant", content: "Sorry, I'm having trouble answering that question." }}

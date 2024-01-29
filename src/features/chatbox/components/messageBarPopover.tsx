@@ -56,7 +56,7 @@ const MessageBarPopover: React.FC<MessageBarPopoverProps> = ({
     isOpen && (
       <FloatingFocusManager context={context} modal={false}>
         <div
-          className="bg-sce-grey-800 absolute flex flex-col gap-4 pl-4 pr-8 py-4 z-10 text-white text-md border border-gray-800 rounded-md shadow-md"
+          className="bg-primary absolute flex flex-col gap-4 pl-4 pr-8 py-4 z-10 text-text-primary text-md border border-primary rounded-md shadow-md"
           ref={refs.setFloating}
           style={floatingStyles}
           aria-labelledby={headingId}
@@ -67,7 +67,7 @@ const MessageBarPopover: React.FC<MessageBarPopoverProps> = ({
             onClick={openShortcuts}
           >
             <div className="w-6 align-middle">
-              <Toolbox className="w-6 flex justify-center items-center" />
+              <Toolbox className="w-6 flex justify-center items-center text-accent-1" />
             </div>
             <span className="self-center">Shortcuts</span>
           </button>
@@ -76,7 +76,7 @@ const MessageBarPopover: React.FC<MessageBarPopoverProps> = ({
             onClick={addAttachment}
           >
             <div className="align-middle">
-              <Paperclip className="w-5 flex justify-center items-center" />
+              <Paperclip className="w-5 flex justify-center items-center text-accent-1" />
             </div>
             <span className="self-center">Attach</span>
           </button>
@@ -84,6 +84,6 @@ const MessageBarPopover: React.FC<MessageBarPopoverProps> = ({
       </FloatingFocusManager>
     )
   );
-};
+};  
 
 export default MessageBarPopover;

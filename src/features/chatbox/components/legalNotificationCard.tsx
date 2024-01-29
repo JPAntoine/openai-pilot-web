@@ -18,9 +18,9 @@ export const LegalNotificationCard: React.FC<LegalNotificationCardProps> = ({
   listItems,
   ...rest
 }) => {
-  const baseStyle = "flex flex-col max-w-[22rem] text-white";
-  const combinedStyle = `${baseStyle} ${className}`;
-
+  const baseStyle = "flex flex-col max-w-[22rem] text-text-primary m-5";
+  const combinedStyle = `${baseStyle} ${className || ''}`;
+  
   return (
     <div className={combinedStyle} {...rest}>
       {icon}
@@ -32,7 +32,7 @@ export const LegalNotificationCard: React.FC<LegalNotificationCardProps> = ({
             {listItems.map((item, index) => (
               <li key={index} className="mb-3">
                 {item.link ? (
-                  <Link href={item.link} openInNewTab={true} className="underline">
+                  <Link href={item.link} openInNewTab={true} className="text-text-link underline">
                     {item.text}
                   </Link>
                 ) : (
@@ -42,10 +42,11 @@ export const LegalNotificationCard: React.FC<LegalNotificationCardProps> = ({
             ))}
           </ul>
         )}
-        <Link className="self-center mt-3 underline" href={link} openInNewTab={true}>
+        <Link className="self-center mt-3 text-text-link underline" href={link} openInNewTab={true}>
           Learn more
         </Link>
       </div>
     </div>
   );
+  
 };

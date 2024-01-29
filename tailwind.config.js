@@ -19,6 +19,13 @@ module.exports = {
       },
 
       colors: {
+        background: "#F4F5F7",
+        "footer-tertiary": "#66717F",
+        primary: "#007AA3",
+        "text-primary": "#202427",
+        secondary: "#E5F5F8",
+        "text-link": "#0000EE",
+        "accent-1": "#00A2C7",
         "sce-off-white": "#F1F1F1",
         "sce-grey": {
           100: "#D5D5D5",
@@ -30,8 +37,7 @@ module.exports = {
         },
         "sce-amber": {
           400: "#FED141",
-        },
-        "edison-green": "#00664F",
+        }
       },
       gap: {
         9.5: "2.375rem",

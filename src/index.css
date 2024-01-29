@@ -10,6 +10,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.loader-primary {
+  color: theme('colors.text-primary');
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #52525b #27272a;

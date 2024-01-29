@@ -25,7 +25,7 @@ import LegalNotification from "./legalNotification";
 
 const LoadingConversation = () => (
   <div className="flex h-full flex-col items-center justify-center gap-4 overflow-auto px-4">
-    <ClipLoader color="#FFFFFF" speedMultiplier={0.5} />
+    <ClipLoader className="loader-primary" speedMultiplier={0.5} />
   </div>
 );
 
@@ -121,12 +121,12 @@ const ChatBox: React.FC<object> = () => {
   };
 
   return (
-    <div className="flex h-full max-h-full w-full flex-col gap-4 rounded-xl">
+    <div className="flex h-full max-h-full w-full flex-col gap-4 bg-secondary rounded-xl">
       {/* if activeConvoId is null, show the intro state (welcome message) which is a static UI and pass greeting to messageStream */}
       {activeConversationId === null ||
       !conversation.messages.length ? (
         <div className="flex flex-col h-full overflow-auto">
-          <LegalNotification className="w-4/5 mt-16 self-center rounded-3xl" />
+          <LegalNotification className="w-4/5 mt-16 self-center bg-background rounded-3xl bg-" />
           <ChatMessage
             className="mt-auto"
             message={{
@@ -151,12 +151,12 @@ const ChatBox: React.FC<object> = () => {
         <div className="flex flex-col justify-center mb-[-4px]">
           <div className="text-center">
             {userRetryCountdown > 0 ? (
-              <div className="text-white font-bold italic">
+              <div className="font-bold italic">
                 System appears to be unavailable, automatically retrying for{" "}
                 {userRetryCountdown} seconds...
               </div>
             ) : (
-              <div className="text-white font-bold italic">
+              <div className="font-bold italic">
                 System is currently unavailable. Please enter your question
                 again in {RetryTimes.FINAL_WAIT_TIME} minutes.
               </div>

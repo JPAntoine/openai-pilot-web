@@ -77,6 +77,10 @@ const conversationSlice = createSlice({
   initialState,
   reducers: {
     setActiveConversationId: (state, action: PayloadAction<string | null>) => {
+      if(action.payload === null) {
+        state.conversation = initialState.conversation;
+        state.userInput = "";
+      }
       state.activeConversationId = action.payload || "";
     },
     setIsProcessingCompletion: (state, action: PayloadAction<boolean>) => {
@@ -97,6 +101,7 @@ const conversationSlice = createSlice({
     // Generate Title
     .addCase(generateTitleThunk.fulfilled, (state, action) => {
       state.conversation.title = action.payload.title;
+      updateConversations(state);
     })
     // complete Chat
     .addCase(completeChatThunk.pending, (state) => {
@@ -108,6 +113,7 @@ const conversationSlice = createSlice({
       state.userInput = "";
     })
     .addCase(completeChatThunk.fulfilled, (state, action) => {
+      state.activeConversationId = action.payload.conversationId;
       // push the users message to the conversation
       state.conversation.messages.push({
         content: state.inFlightMessage,

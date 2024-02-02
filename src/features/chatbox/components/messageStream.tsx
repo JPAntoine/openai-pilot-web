@@ -16,7 +16,7 @@ const MessageStream: React.FC<React.HTMLAttributes<HTMLElement> & MessageStreamP
 }) => {
   const inFlightMessage = useSelector((state: RootState) => state.conversation.inFlightMessage);
   return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden hover:overflow-auto px-4 bg-secondary" {...rest}>
+    <div className="flex h-full flex-col gap-4 overflow-hidden hover:overflow-auto px-4 bg-background" {...rest}>
       {messages?.map((message: Message) => (
         <ChatMessage message={message} key={message.id} />
       ))}

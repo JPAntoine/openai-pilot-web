@@ -108,31 +108,36 @@ const conversationSlice = createSlice({
       state.userInput = "";
     })
     .addCase(completeChatThunk.fulfilled, (state, action) => {
-      // need to push the users message to the conversation
-      const newUserMessage: Message = {
+      // push the users message to the conversation
+      state.conversation.messages.push({
         content: state.inFlightMessage,
         role: "user",
         id: state.conversation.messages.length.toString(), 
         conversationId: state.activeConversationId, 
         createdAt: new Date().toISOString(),
-      };
-      state.conversation.messages.push(newUserMessage);
+      });
 
-      //need to push the bots message to the conversation
-      const newMessage: Message = {
+      // push the bots message to the conversation
+      state.conversation.messages.push({
         ...action.payload.message,
         id: state.conversation.messages.length.toString(),
         conversationId: state.activeConversationId,
-      };
-      state.conversation.messages.push(newMessage);
+      });
+
+      //update conversation state
       state.conversation.id = state.activeConversationId;
       state.conversation.user = { id: "1", email: "" }; //TODO need to update this from the actual user object when that is in place
       state.activeConversationId = action.payload.conversationId
-      state.inFlightMessage = "";
-      state.pendingMessage = "";
       updateConversations(state);
-      state.isLoading = false;
-      state.isProcessingCompletion = false;
+      
+      //reset state
+      Object.assign(state, {
+        inFlightMessage: "",
+        pendingMessage: "",
+        isLoading: false,
+        isProcessingCompletion: false,
+        activeConversationId: action.payload.conversationId,
+      });    
     })
     .addCase(completeChatThunk.rejected, (state) => {
       state.isLoading = false;
@@ -163,3 +168,4 @@ export const updateConversations = (state: ConversationState) => {
     state.conversations.push(state.conversation);
   }
 };
+

@@ -15,7 +15,7 @@ interface ChatMessageProps {
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, className }) => {  
     const messageClasses = `flex h-fit min-w-0 items-center gap-4 px-8 py-3 text-text-primary first:mt-auto ${
-      message.role === "user" ? "bg-secondary rounded-md" : ""
+      message.role === "user" ? "bg-background rounded-md" : ""
     } ${className || ""}`;
   
     const renderAvatar = () => (

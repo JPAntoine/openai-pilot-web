@@ -12,7 +12,7 @@ module.exports = {
     },
     extend: {
       boxShadow: {
-        sce: "0px 0px 15px 4px rgba(133,133,133,0.5)",
+        'custom': '0px 4px 4px 0px #00000040',
       },
       transitionProperty: {
         "max-height": "max-height",

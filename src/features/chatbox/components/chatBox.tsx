@@ -13,7 +13,6 @@ import {
 import MessageBar from "./messageBar";
 import MessageStream from "./messageStream";
 import { RetryTimes } from "@/app/constants";
-import LegalNotification from "./legalNotification";
 
 const LoadingConversation = () => (
   <div className="flex h-full flex-col items-center justify-center gap-4 overflow-auto px-4">
@@ -60,12 +59,11 @@ const ChatBox: React.FC<object> = () => {
   };
 
   return (
-    <div className="flex h-full max-h-full w-full flex-col gap-4 bg-secondary rounded-xl">
+    <div className="flex h-full max-h-full w-full flex-col gap-4 bg-background rounded-xl">
       {/* if activeConvoId is null, show the intro state (welcome message) which is a static UI and pass greeting to messageStream */}
       {activeConversationId === null ||
       !conversation.messages.length ? (
         <div className="flex flex-col h-full overflow-auto">
-          <LegalNotification className="w-4/5 mt-16 self-center bg-background rounded-3xl bg-" />
           <ChatMessage
             className="mt-auto"
             message={{

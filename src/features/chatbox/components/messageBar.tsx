@@ -3,11 +3,8 @@ import React, { useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { PulseLoader } from 'react-spinners';
 import UserIcon from '@/features/userIcon/userIcon';
-import { setIsModalOpen as setIsAttachmentModalOpen } from '@/features/chatbox/slices/attachmentModalSlice'
-import { setIsModalOpen as setIsShortcutsModalOpen } from '@/features/chatbox/slices/shortcutModalSlice'
-import { Ellipses, PaperPlane } from '@/icons';
+import { PaperPlane } from '@/icons';
 import FloatingButton from '@/features/shared/buttons/FloatingButton';
-import MessageBarPopover from './messageBarPopover';
 import { RootState } from '@/app/store';
 import { useSelector } from 'react-redux';
 interface MessageBarProps {
@@ -29,8 +26,6 @@ const MessageBar: React.FC<MessageBarProps> = ({
   }));
   //const dispatch: AppDispatch = useDispatch();
   const [anchor, setAnchor] = useState<HTMLDivElement | null>(null);
-  const [menuButton, setMenuButton] = useState<HTMLButtonElement | null>(null);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
@@ -45,7 +40,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
 
   return (
     <div
-      className="bg-primary flex w-full items-center gap-2 rounded-md px-8 py-2 mt-auto"
+      className="bg-secondary flex w-full items-center gap-2 rounded-md px-8 py-2 mt-auto shadow-custom"
       ref={setAnchor}
     >
       <div>
@@ -67,7 +62,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Ask your question..."
-        className="h-full w-full flex-grow resize-none bg-transparent p-2 text-text-primary outline-none"
+        className="h-full w-full flex-grow resize-none bg-transparent p-2 text-black outline-none"
         disabled={userRetryCountdown > 0}
       />
       {isProcessingCompletion || userRetryCountdown > 0 ? (
@@ -75,15 +70,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
           <PulseLoader size={4} color="#F4F5F7" loading={true} />
         </div>
       ) : (
-        <>
-          <button
-            id="ellipses-button"
-            className="text-text-primary w-5 h-5"
-            ref={setMenuButton}
-            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-          >
-            <Ellipses />
-          </button>
+        <>          
           <button
             className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-text-primary font-bold text-text-primary transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
             onClick={onSubmit}
@@ -93,14 +80,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
             <PaperPlane className="h-4 w-4" />
           </button>
         </>
-      )}
-      <MessageBarPopover
-        anchor={menuButton}
-        isOpen={isPopoverOpen}
-        setIsOpen={setIsPopoverOpen}
-        addAttachment={() => setIsAttachmentModalOpen(true)}
-        openShortcuts={() => setIsShortcutsModalOpen(true)}      
-      />
+      )}    
     </div>
   );
 };

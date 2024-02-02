@@ -81,6 +81,12 @@ const conversationSlice = createSlice({
         state.conversation = initialState.conversation;
         state.userInput = "";
       }
+      else {
+        const conversation = state.conversations.find(c => c.id === action.payload);
+        if(conversation) {
+          state.conversation = conversation;
+        }
+      }
       state.activeConversationId = action.payload || "";
     },
     setIsProcessingCompletion: (state, action: PayloadAction<boolean>) => {

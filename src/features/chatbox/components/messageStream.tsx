@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 import ScrollToBottom from './scrollToBottom';
 import ChatMessage from './chatMessage';
-import { Message, Timestamps } from '../api/chatService';
+import { Message } from '../api/chatService';
 
 interface MessageStreamProps {
-  messages: Array<Message & Timestamps>;
+  messages: Array<Message>;
   isError: boolean;
   isLoading: boolean;
 }

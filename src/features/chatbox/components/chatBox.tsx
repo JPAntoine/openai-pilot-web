@@ -5,19 +5,11 @@ import ChatMessage from "./chatMessage";
 import { ClipLoader } from "react-spinners";
 import { RootState, AppDispatch } from "@/app/store";
 import {
-    generateTitleThunk,
-  processChatThunk,
+  completeChatThunk,
+  generateTitleThunk,
   setUserInput,
 } from "../slices/conversationSlice";
 
-import {
-  setBackendUnavailable,
-  setRetryCountdown,
-  setRetryAttempt,
-  setUserRetryCountdown,
-  resetRetryState,
-  setFinalCountdown
-} from "../slices/retrySlice";
 import MessageBar from "./messageBar";
 import MessageStream from "./messageStream";
 import { RetryTimes } from "@/app/constants";
@@ -41,54 +33,21 @@ const ChatBox: React.FC<object> = () => {
     conversation, 
     hasError, 
     isLoading, 
-    pendingMessage } = useSelector((state: RootState) => state.conversation);
+    } = useSelector((state: RootState) => state.conversation);
   const {
     backendUnavailable,
-    retryCountdown,
-    retryAttempt,
     userRetryCountdown,
-    finalCountdown
   } = useSelector((state: RootState) => state.retry);
 
   useEffect(() => {
     if (
       conversation.messages.length >= 2 &&
-      !conversation.titleGenerated &&
+      !conversation.title &&
       activeConversationId
     ) {
-        dispatch(generateTitleThunk({ args: { conversationId: conversation.id }, signal: controller.signal }));     
+        dispatch(generateTitleThunk({ args: { conversationId: activeConversationId}, signal: controller.signal }));     
     }
-  }, [conversation.messages.length, activeConversationId, conversation.titleGenerated]);
-
-  useEffect(() => {
-    if (backendUnavailable) {
-      const timer = setInterval(() => {
-        dispatch(setUserRetryCountdown(userRetryCountdown - 1));
-        if (userRetryCountdown <= 1) {
-          clearInterval(timer);
-          dispatch(setBackendUnavailable(false));
-          dispatch(setRetryAttempt(0));
-          dispatch(setFinalCountdown(RetryTimes.FINAL_WAIT_TIME * 60));
-        } else {
-          handleRetryLogic();
-        }
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [backendUnavailable, userRetryCountdown]);
-
-  useEffect(() => {
-    if (backendUnavailable && finalCountdown > 0) {
-      const timer = setInterval(() => {
-        dispatch(setFinalCountdown(finalCountdown - 1));
-        if (finalCountdown <= 1) {
-          clearInterval(timer);
-        }
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [backendUnavailable, finalCountdown]);
-
+  }, [conversation.messages.length, activeConversationId, conversation.title]);
 
   const stopGeneration = () => {
     controller && controller.abort();
@@ -96,27 +55,7 @@ const ChatBox: React.FC<object> = () => {
 
   const handleSubmit = async () => {
     if (!isProcessingCompletion || userInput) {
-      dispatch(processChatThunk({ args: { content: userInput, messages: conversation.messages, conversationId: activeConversationId || "" }, signal: controller.signal })); 
-    }
-  };
-
-  const handleRetryLogic = () => {
-    if (retryCountdown <= 0 && backendUnavailable && pendingMessage) {
-      dispatch(setUserInput(pendingMessage));
-      handleSubmit();
-      const nextAttempt = retryAttempt + 1;
-      dispatch(setRetryAttempt(nextAttempt));
-
-      // Calculate the next delay for retry
-      const nextDelay = Math.min(
-        2 * RetryTimes.BASE_DELAY * Math.pow(2, nextAttempt),
-        RetryTimes.MAX_RETRY_DURATION
-      );
-      dispatch(setRetryCountdown(nextDelay));
-
-      if (nextDelay >= RetryTimes.MAX_RETRY_DURATION) {
-        dispatch(resetRetryState());
-      }
+      dispatch(completeChatThunk({ args: conversation , signal: controller.signal })); 
     }
   };
 

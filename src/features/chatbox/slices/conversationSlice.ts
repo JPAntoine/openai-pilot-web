@@ -1,28 +1,13 @@
 import {
-  CompleteChatArgs,
-  GenerateTitleArgs,
-  PostMessageArgs,
   Conversation,
-  ProcessChatArgs,
+  GenerateTitleArgs,
+  Message,
 } from "@/features/chatbox/api/chatService";
 
 import * as api from "@/features/chatbox/api/chatService";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Async thunks
-export const completeChatThunk = createAsyncThunk(
-  "conversation/completeChat",
-  async ({
-    args,
-    signal,
-  }: {
-    args: CompleteChatArgs;
-    signal: AbortSignal;
-  }) => {
-    return await api.completeChat(args, signal);
-  }
-);
-
 export const generateTitleThunk = createAsyncThunk(
   "conversation/generateTitle",
   async ({
@@ -32,34 +17,19 @@ export const generateTitleThunk = createAsyncThunk(
     args: GenerateTitleArgs;
     signal: AbortSignal;
   }) => {
-    await api.generateTitle(args, signal);
+    return await api.generateTitle(args, signal);
   }
 );
 
-export const postConversationThunk = createAsyncThunk(
-  "conversation/postConversation",
-  async ({ signal, greeting }: { signal: AbortSignal, greeting?: string;  }) => {
-    return await api.postConversation(signal, greeting);
+export const completeChatThunk = createAsyncThunk(
+  'conversation/processChat',
+  async ({ args, signal }: { args: Conversation; signal: AbortSignal }) => {
+    return await api.completeChat(args, signal);      
   }
 );
-
-export const postMessageThunk = createAsyncThunk(
-  "conversation/postMessage",
-  async ({ args, signal }: { args: PostMessageArgs; signal: AbortSignal }) => {
-    return await api.postMessage(args, signal);
-  }
-);
-
-export const processChatThunk = createAsyncThunk(
-    'conversation/processChat',
-    async ({ args, signal }: { args: ProcessChatArgs; signal: AbortSignal }) => {
-      return await api.processChat(args, signal);      
-    }
-);
-
 
 interface ConversationState {
-  activeConversationId: string | null;
+  activeConversationId: string;
   isProcessingCompletion: boolean;
   inFlightMessage: string;
   pendingMessage: string;
@@ -67,10 +37,11 @@ interface ConversationState {
   isLoading: boolean;
   conversation: Conversation;
   userInput: string;
+  conversations: Conversation[];
 }
 
 const initialState: ConversationState = {
-  activeConversationId: null,
+  activeConversationId: "",
   isProcessingCompletion: false,
   inFlightMessage: "",
   pendingMessage: "",
@@ -79,11 +50,11 @@ const initialState: ConversationState = {
   userInput: "",
   conversation: {
     id: "",
-    name: "",
+    title: "",
     messages: [],
-    titleGenerated: false,
     user: { id: "", email: "" },
   },
+  conversations: []
 };
 
 const conversationSlice = createSlice({
@@ -91,7 +62,7 @@ const conversationSlice = createSlice({
   initialState,
   reducers: {
     setActiveConversationId: (state, action: PayloadAction<string | null>) => {
-      state.activeConversationId = action.payload;
+      state.activeConversationId = action.payload || "";
     },
     setIsProcessingCompletion: (state, action: PayloadAction<boolean>) => {
       state.isProcessingCompletion = action.payload;
@@ -108,87 +79,56 @@ const conversationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Complete Chat
-      .addCase(completeChatThunk.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(completeChatThunk.fulfilled, (state) => {
-        state.isLoading = false;
-        state.isProcessingCompletion = false;
-      })
-      .addCase(completeChatThunk.rejected, (state) => {
-        state.isLoading = false;
-        state.hasError = true;
-      })
-      // Generate Title
-      .addCase(generateTitleThunk.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(generateTitleThunk.fulfilled, (state) => {
-        state.isLoading = false;
-        state.conversation.titleGenerated = true;
-      })
-      .addCase(generateTitleThunk.rejected, (state) => {
-        state.isLoading = false;
-        state.hasError = true;
-      })
-
-      // Post Conversation
-      .addCase(postConversationThunk.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(postConversationThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.conversation.id = action.payload.conversation.id;
-      })
-      .addCase(postConversationThunk.rejected, (state) => {
-        state.isLoading = false;
-        state.hasError = true;
-      })
-      // Post Message
-      .addCase(postMessageThunk.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(postMessageThunk.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.conversation.messages.push(action.payload.message);
-      })
-      .addCase(postMessageThunk.rejected, (state) => {
-        state.isLoading = false;
-        state.hasError = true;
-      })
-      // Process Chat
-      .addCase(processChatThunk.pending, (state) => {
-        state.isLoading = true;
-        state.isProcessingCompletion = true;
-        state.hasError = false;
-        state.inFlightMessage = state.userInput;
-        state.pendingMessage = state.userInput;
-        state.userInput = "";
-      })
-      .addCase(processChatThunk.fulfilled, (state, action) => {
-        const newMessage = {
-          ...action.payload.result.message,
-          id: state.conversation.messages.length.toString(), // Assign the next ID
-          conversationId: action.payload.conversationId, // Assuming this is the relevant ID
-          createdAt: new Date().toISOString(), // Assign the current date or get from another source
-          updatedAt: new Date().toISOString() // Assign the current date or get from another source
-        };
-        state.conversation.messages.push(newMessage);
-        state.conversation.id = action.payload.conversationId;
-        state.activeConversationId = action.payload.conversationId;
-        
-
-        state.inFlightMessage = "";
-        state.pendingMessage = "";
-        state.isLoading = false;
-        state.isProcessingCompletion = false;
-
-      })
-      .addCase(processChatThunk.rejected, (state) => {
-        state.isLoading = false;
-        state.hasError = true;
-      });
+    // Generate Title
+    .addCase(generateTitleThunk.pending, (state) => {
+      //state.isLoading = true;
+      //state.hasError = false;
+    })
+    .addCase(generateTitleThunk.fulfilled, (state, action) => {
+      //state.isLoading = false;
+      state.conversation.title = action.payload.title;
+    })
+    .addCase(generateTitleThunk.rejected, (state) => {
+      //state.isLoading = false;
+      //state.hasError = true;
+    })
+    // complete Chat
+    .addCase(completeChatThunk.pending, (state) => {
+      state.isLoading = true;
+      state.isProcessingCompletion = true;
+      state.hasError = false;
+      state.inFlightMessage = state.userInput;
+      state.pendingMessage = state.userInput;
+      state.userInput = "";
+      state.activeConversationId = state.activeConversationId || Math.random().toString(36).substring(7);
+    })
+    .addCase(completeChatThunk.fulfilled, (state, action) => {
+      // need to push the users message to the conversation
+      const newUserMessage: Message = {
+        content: state.inFlightMessage,
+        role: "user",
+        id: state.conversation.messages.length.toString(), 
+        conversationId: state.activeConversationId, 
+        createdAt: new Date().toISOString(),
+      };
+      state.conversation.messages.push(newUserMessage);
+      //need to push the bots message to the conversation
+      const newMessage = {
+        ...action.payload.message,
+        id: state.conversation.messages.length.toString(), // Assign the next ID for UL 
+        conversationId: state.activeConversationId || "", // Assuming this is the relevant conversation ID bun need to check for nulls.
+      };
+      state.conversation.messages.push(newMessage);
+      state.inFlightMessage = "";
+      state.pendingMessage = "";
+      updateConversations(state);
+      state.isLoading = false;
+      state.isProcessingCompletion = false;
+    })
+    .addCase(completeChatThunk.rejected, (state) => {
+      state.isLoading = false;
+      state.hasError = true;
+    });
   },
 });
 
@@ -201,3 +141,16 @@ export const {
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
+
+
+export const updateConversations = (state: ConversationState) => {
+  const index = state.conversations.findIndex(c => c.id === state.conversation.id);
+
+  if (index !== -1) {
+    // Conversation with the same ID exists, overwrite it
+    state.conversations[index] = state.conversation;
+  } else {
+    // No conversation with the same ID, add the new one
+    state.conversations.push(state.conversation);
+  }
+};

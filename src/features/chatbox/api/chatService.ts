@@ -45,10 +45,12 @@ export interface GenerateTitleArgs {
 
 export interface GenerateTitleResponse {
   title: string;
+  conversationId: string;
 }
 
 export type CompleteChatResponse = {
   message: Omit<Message, "id" | "conversationId">;
+  conversationId: string;
 }
 
 export interface CompleteChatArgs {
@@ -67,7 +69,7 @@ export const generateTitle = async (
 };  
 
 export const completeChat = async (
-  args: Conversation, 
+  args: CompleteChatArgs, 
   controllerSignal: AbortSignal
 ): Promise<CompleteChatResponse> => {  
   const response: AxiosResponse<CompleteChatResponse> =

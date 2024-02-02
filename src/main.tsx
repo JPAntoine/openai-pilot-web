@@ -17,10 +17,10 @@ const rootNode = document.getElementById("root");
 if (!rootNode) throw new Error("Failed to find the root element");
 
 
-(async () => {
-  if (process.env.NODE_ENV === 'development') {
-    await import('@/testing/mocks/chatServiceMocks.ts');
-  }})();
+// (async () => {
+//   if (process.env.NODE_ENV === 'development') {
+//     await import('@/testing/mocks/chatServiceMocks.ts');
+//   }})();
 
 const root = ReactDOM.createRoot(rootNode);
 

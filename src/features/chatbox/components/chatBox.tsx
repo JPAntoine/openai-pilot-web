@@ -54,8 +54,8 @@ const ChatBox: React.FC<object> = () => {
   };
 
   const handleSubmit = async () => {
-    if (!isProcessingCompletion || userInput) {
-      dispatch(completeChatThunk({ args: conversation , signal: controller.signal })); 
+    if (!isProcessingCompletion || userInput) {      
+      dispatch(completeChatThunk({ signal: controller.signal })); 
     }
   };
 

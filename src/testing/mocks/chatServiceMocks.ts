@@ -7,6 +7,7 @@ const mockDelay = 2500;
 
 // Mock data for completeChat
 const mockCompleteChatResponse: CompleteChatResponse = {
+    conversationId: "mockConversationId",
     message: {
       role: "assistant",
       content: "This is a mock response",
@@ -37,6 +38,6 @@ const mockCompleteChatResponse: CompleteChatResponse = {
   });
 
 
-if (process.env.NODE_ENV !== 'production') {
-    import('./chatServiceMocks');
-}
+// if (process.env.NODE_ENV !== 'production') {
+//     import('./chatServiceMocks');
+// }

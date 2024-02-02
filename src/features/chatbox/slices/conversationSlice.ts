@@ -1,3 +1,4 @@
+import { RootState } from "@/app/store";
 import {
   Conversation,
   GenerateTitleArgs,
@@ -22,9 +23,23 @@ export const generateTitleThunk = createAsyncThunk(
 );
 
 export const completeChatThunk = createAsyncThunk(
-  'conversation/processChat',
-  async ({ args, signal }: { args: Conversation; signal: AbortSignal }) => {
-    return await api.completeChat(args, signal);      
+  'conversation/completeChat',
+  async ({ signal }: { signal: AbortSignal }, { getState }) => {
+    const state = getState() as RootState; 
+    const conversationState = state.conversation;
+    const newMsg: Message = {
+      content: conversationState.inFlightMessage,
+      role: "user",
+      id: "",
+      conversationId: "",
+      createdAt: "",
+    };
+
+    const payload: api.CompleteChatArgs = {
+      messages: [...conversationState.conversation.messages, newMsg],
+      conversationId: conversationState.activeConversationId || Math.random().toString(36).substring(7),
+    };
+    return await api.completeChat(payload, signal);      
   }
 );
 
@@ -80,17 +95,8 @@ const conversationSlice = createSlice({
   extraReducers: (builder) => {
     builder
     // Generate Title
-    .addCase(generateTitleThunk.pending, (state) => {
-      //state.isLoading = true;
-      //state.hasError = false;
-    })
     .addCase(generateTitleThunk.fulfilled, (state, action) => {
-      //state.isLoading = false;
       state.conversation.title = action.payload.title;
-    })
-    .addCase(generateTitleThunk.rejected, (state) => {
-      //state.isLoading = false;
-      //state.hasError = true;
     })
     // complete Chat
     .addCase(completeChatThunk.pending, (state) => {
@@ -100,7 +106,6 @@ const conversationSlice = createSlice({
       state.inFlightMessage = state.userInput;
       state.pendingMessage = state.userInput;
       state.userInput = "";
-      state.activeConversationId = state.activeConversationId || Math.random().toString(36).substring(7);
     })
     .addCase(completeChatThunk.fulfilled, (state, action) => {
       // need to push the users message to the conversation
@@ -112,13 +117,17 @@ const conversationSlice = createSlice({
         createdAt: new Date().toISOString(),
       };
       state.conversation.messages.push(newUserMessage);
+
       //need to push the bots message to the conversation
-      const newMessage = {
+      const newMessage: Message = {
         ...action.payload.message,
-        id: state.conversation.messages.length.toString(), // Assign the next ID for UL 
-        conversationId: state.activeConversationId || "", // Assuming this is the relevant conversation ID bun need to check for nulls.
+        id: state.conversation.messages.length.toString(),
+        conversationId: state.activeConversationId,
       };
       state.conversation.messages.push(newMessage);
+      state.conversation.id = state.activeConversationId;
+      state.conversation.user = { id: "1", email: "" }; //TODO need to update this from the actual user object when that is in place
+      state.activeConversationId = action.payload.conversationId
       state.inFlightMessage = "";
       state.pendingMessage = "";
       updateConversations(state);

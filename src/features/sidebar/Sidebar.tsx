@@ -35,6 +35,8 @@ const History: React.FC = () => {
         Chat History
       </div>
       <ConversationHistory />
+
+      <div className="border-t border-primary mx-4 "></div>  
       <div className="bg-secondary flex items-center justify-center rounded-b-md px-4 py-3">
         <NewChatButton />
       </div>

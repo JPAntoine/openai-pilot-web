@@ -1,5 +1,3 @@
-
-import clickCounterReducer from '@/features/clickCounter/clickCounterSlice';
 import userPhotoReducer from '@/features/userIcon/userPhotoSlice';
 import pdfModalReducer from '@/features/pdfModal/pdfModalSlice';
 import conversationReducer from '@/features/chatbox/slices/conversationSlice';
@@ -11,7 +9,6 @@ import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
   reducer: {
-    counter: clickCounterReducer,
     userPhoto: userPhotoReducer,
     pdfModal: pdfModalReducer,
     conversation: conversationReducer,

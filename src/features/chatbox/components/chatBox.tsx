@@ -53,7 +53,7 @@ const ChatBox: React.FC<object> = () => {
   };
 
   const handleSubmit = async () => {
-    if (!isProcessingCompletion || userInput) {      
+    if (!isProcessingCompletion && userInput) {      
       dispatch(completeChatThunk({ signal: controller.signal })); 
     }
   };
@@ -61,8 +61,7 @@ const ChatBox: React.FC<object> = () => {
   return (
     <div className="flex h-full max-h-full w-full flex-col gap-4 bg-background rounded-xl">
       {/* if activeConvoId is null, show the intro state (welcome message) which is a static UI and pass greeting to messageStream */}
-      {activeConversationId === null ||
-      !conversation.messages.length ? (
+      {activeConversationId === null || !conversation.messages.length ? (
         <div className="flex flex-col h-full overflow-auto">
           <ChatMessage
             className="mt-auto"

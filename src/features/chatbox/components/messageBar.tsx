@@ -24,7 +24,6 @@ const MessageBar: React.FC<MessageBarProps> = ({
     isProcessingCompletion: state.conversation.isProcessingCompletion,
     userRetryCountdown: state.retry.userRetryCountdown, // Assuming `retry` slice exists
   }));
-  //const dispatch: AppDispatch = useDispatch();
   const [anchor, setAnchor] = useState<HTMLDivElement | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -72,12 +71,12 @@ const MessageBar: React.FC<MessageBarProps> = ({
       ) : (
         <>          
           <button
-            className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-text-primary font-bold text-text-primary transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
+            className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-text-primary text-text-primary transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
             onClick={onSubmit}
             disabled={userRetryCountdown > 0 || isProcessingCompletion}
           >
             <div className="text-sm">Send</div>
-            <PaperPlane className="h-4 w-4" />
+            <PaperPlane className="ml-1 h-4 w-4" />
           </button>
         </>
       )}    

@@ -35,3 +35,10 @@ body {
   background-clip: padding-box;
 }
 
+/* this is to help size the company logo as it sometimes needs to be adjusted */
+.company-logo {
+  width: 180px; 
+  margin-top: -10px; 
+  margin-bottom: -10px; 
+}
+

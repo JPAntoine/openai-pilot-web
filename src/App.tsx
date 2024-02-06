@@ -10,7 +10,7 @@ function App() {
     
     <Header className="flex flex-shrink-0 items-center">
       <div className="ml-3 flex items-center justify-center gap-2">
-        <img src="company-logo.png" className="w-40 -mt-[10px] -mb-[10px]" />
+        <img src="company-logo.png" className="company-logo" />
       </div>
 
       <UserIcon className="ml-auto h-8 w-8 block" />

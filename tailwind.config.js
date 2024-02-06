@@ -19,25 +19,13 @@ module.exports = {
       },
 
       colors: {
-        background: "#F4F5F7",
+        background: "#F4F5F7", //main background color
         "footer-tertiary": "#66717F",
         primary: "#007AA3",
         "text-primary": "#202427",
         secondary: "#E5F5F8",
         "text-link": "#0000EE",
-        "accent-1": "#00A2C7",
-        "sce-off-white": "#F1F1F1",
-        "sce-grey": {
-          100: "#D5D5D5",
-          200: "#D2D2D2",
-          300: "#515C67",
-          500: "#707372",
-          700: "#101820",
-          800: "#2D343B",
-        },
-        "sce-amber": {
-          400: "#FED141",
-        }
+        "accent-1": "#00A2C7", //mostly used as background for chat history and chat input
       },
       gap: {
         9.5: "2.375rem",

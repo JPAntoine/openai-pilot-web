@@ -21,7 +21,7 @@ const MessageStream: React.FC<React.HTMLAttributes<HTMLElement> & MessageStreamP
         <ChatMessage message={message} key={message.id} />
       ))}
   
-      {messages?.slice(-2)[0]?.content !== inFlightMessage && (
+      {inFlightMessage && (
         <>
           {inFlightMessage && (
             <ChatMessage

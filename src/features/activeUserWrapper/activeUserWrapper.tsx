@@ -16,7 +16,7 @@ const ActiveUserWrapper: React.FC<{ children: React.ReactNode }> = ({
     const accounts = msalInstance.getAllAccounts();
     const account = accounts.find(
       (account) =>
-        account.username.toLowerCase().endsWith("@companyemail.com") ||
+        account.username.toLowerCase().endsWith("@neudesic.com") ||
         account.username.toLowerCase().endsWith("@companyaltemail.com")
     );
 

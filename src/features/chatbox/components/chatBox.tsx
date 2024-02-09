@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useAccount } from "@azure/msal-react";
 import ChatMessage from "./chatMessage";
@@ -7,12 +7,13 @@ import { RootState, AppDispatch } from "@/app/store";
 import {
   completeChatThunk,
   generateTitleThunk,
+  setPendingMessage,
   setUserInput,
 } from "../slices/conversationSlice";
 
 import MessageBar from "./messageBar";
 import MessageStream from "./messageStream";
-import { RetryTimes } from "@/app/constants";
+import axios, { CancelTokenSource } from "axios";
 
 const LoadingConversation = () => (
   <div className="flex h-full flex-col items-center justify-center gap-4 overflow-auto px-4">
@@ -21,47 +22,70 @@ const LoadingConversation = () => (
 );
 
 const ChatBox: React.FC<object> = () => {
-    const dispatch: AppDispatch = useDispatch();
-  const user = useAccount();
-  
-  const controller = new AbortController();  
+  const dispatch: AppDispatch = useDispatch();
+  const user = useAccount();  
+  const [completeChatCancelTokenSource, setCompleteChatCancelTokenSource] = useState<CancelTokenSource | null>(null);
+  const [generateTitleCancelTokenSource, setGenerateTitleCancelTokenSource] = useState<CancelTokenSource | null>(null);
   const { 
     userInput, 
     activeConversationId, 
     isProcessingCompletion, 
     conversation, 
-    hasError, 
+    hasCompletionError, 
     isLoading, 
+    pendingMessage,
+    inFlightMessage
     } = useSelector((state: RootState) => state.conversation);
   const {
     backendUnavailable,
     userRetryCountdown,
+    finalCountdown,
   } = useSelector((state: RootState) => state.retry);
-
+  
   useEffect(() => {
     if (
       conversation.messages.length >= 2 &&
       !conversation.title &&
       activeConversationId
     ) {
-        dispatch(generateTitleThunk({ args: { conversationId: activeConversationId}, signal: controller.signal }));     
+
+        const source = axios.CancelToken.source();
+        setGenerateTitleCancelTokenSource(source); 
+        dispatch(generateTitleThunk({ args: { conversationId: activeConversationId}, cancelToken: source.token, dispatch: dispatch}));     
     }
   }, [conversation.messages.length, activeConversationId, conversation.title]);
 
-  const stopGeneration = () => {
-    controller && controller.abort();
-  };
+  useEffect(() => {
+    if (backendUnavailable && !pendingMessage){
+      dispatch(setPendingMessage(inFlightMessage));
+    } else if (!backendUnavailable && pendingMessage){
+      dispatch(setPendingMessage(""));
+    }
+  }, [backendUnavailable]);
 
   const handleSubmit = async () => {
-    if (!isProcessingCompletion && userInput) {      
-      dispatch(completeChatThunk({ signal: controller.signal })); 
+    if (!isProcessingCompletion && userInput) {  
+      const source = axios.CancelToken.source();
+      setCompleteChatCancelTokenSource(source); 
+      dispatch(completeChatThunk({ cancelToken: source.token, dispatch: dispatch})); 
     }
   };
 
+  const stopGeneration = () => {
+    if (completeChatCancelTokenSource) {
+      completeChatCancelTokenSource.cancel("Operation canceled by the user.");
+      setCompleteChatCancelTokenSource(null);
+    }
+    if (generateTitleCancelTokenSource) {
+      generateTitleCancelTokenSource.cancel("Operation canceled by the user.");
+      setGenerateTitleCancelTokenSource(null);
+    }
+  };
+  
   return (
     <div className="flex h-full max-h-full w-full flex-col gap-4 bg-background rounded-xl">
       {/* if activeConvoId is null, show the intro state (welcome message) which is a static UI and pass greeting to messageStream */}
-      {activeConversationId === null || !conversation.messages.length ? (
+      {activeConversationId === "" && !backendUnavailable ? (
         <div className="flex flex-col h-full overflow-auto">
           <ChatMessage
             className="mt-auto"
@@ -76,7 +100,7 @@ const ChatBox: React.FC<object> = () => {
         </div>
       ) : conversation ? (
         <MessageStream
-          isError={hasError}
+          isError={hasCompletionError}
           isLoading={isLoading}
           messages={conversation.messages}
         />
@@ -94,7 +118,7 @@ const ChatBox: React.FC<object> = () => {
             ) : (
               <div className="font-bold italic">
                 System is currently unavailable. Please enter your question
-                again in {RetryTimes.FINAL_WAIT_TIME} minutes.
+                again in { Math.floor(finalCountdown/60) } minutes.
               </div>
             )}
           </div>
@@ -102,7 +126,7 @@ const ChatBox: React.FC<object> = () => {
       )}
       <MessageBar
         value={userRetryCountdown > 0 ? "" : userInput}
-        setValue={(value) => dispatch(setUserInput(value))}
+        setValue={(value) => !isProcessingCompletion ? dispatch(setUserInput(value)) : null}
         onSubmit={handleSubmit}
         stopGeneration={stopGeneration}
       />

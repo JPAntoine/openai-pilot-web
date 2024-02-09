@@ -42,3 +42,19 @@ To run the test suite and evaluate the code quality:
 yarn test
 
 To view the coverage report, open coverage/index.html in your web browser after running the tests.
+
+### Updating for new Clients
+
+src/features/activeUserWrapper/activeUserWrapper.tsx - grabs user accounts matching a users email domain.  this needs to be update to focus on specific domains
+
+index.css - contains sizing for comany logo since logos often need adjustment
+
+/public/ - contains images for use in the app
+- bot-avatar - used for both avatar and app icon
+- company-logo - used in top left of main window only
+
+tailwind.config.js - contains high level color scheme
+- background - standard farthest most background 
+- primary - used for menu highlights
+- secondary - used mainly for background of left chat menu and message bar
+- other colors impact but may need a bit of fiddling to get right. 

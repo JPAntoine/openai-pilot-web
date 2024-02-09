@@ -1,5 +1,6 @@
-import { baseAxiosInstance } from "@/app/base-api";
-import { AxiosResponse } from "axios";
+import { AppDispatch } from "@/app/store";
+import { executeApiRequest } from "@/app/StatefulHttpRequestHandler";
+import { CancelToken } from "axios";
 
 // Common Types
 export type User = {
@@ -51,7 +52,7 @@ export interface GenerateTitleResponse {
 export type CompleteChatResponse = {
   message: Omit<Message, "id" | "conversationId">;
   conversationId: string;
-}
+};
 
 export interface CompleteChatArgs {
   messages: Omit<Message, "id" | "conversationId">[];
@@ -59,20 +60,32 @@ export interface CompleteChatArgs {
 }
 
 // API Methods
+export const generateTitleApiEndpoint = "/conversation/:conversationId/generateTitle";
 export const generateTitle = async (
-  args: GenerateTitleArgs, 
-  controllerSignal: AbortSignal
+  args: GenerateTitleArgs,
+  cancelToken: CancelToken,
+  dispatch: AppDispatch
 ): Promise<GenerateTitleResponse> => {
-  const response: AxiosResponse<GenerateTitleResponse> = 
-    await baseAxiosInstance.post(`/conversation/${args.conversationId}/generateTitle`, {}, { signal: controllerSignal });
-  return response.data;
-};  
-
-export const completeChat = async (
-  args: CompleteChatArgs, 
-  controllerSignal: AbortSignal
-): Promise<CompleteChatResponse> => {  
-  const response: AxiosResponse<CompleteChatResponse> =
-    await baseAxiosInstance.post("/chat", args, { signal: controllerSignal });
-  return response.data;
+  return executeApiRequest<GenerateTitleArgs, GenerateTitleResponse>({
+    args,
+    cancelToken,
+    dispatch,
+    url: generateTitleApiEndpoint,
+  });
 };
+
+export const completeChatApiEndpoint = "/chat";
+export const completeChat = async (
+  args: CompleteChatArgs,
+  cancelToken: CancelToken,
+  dispatch: AppDispatch
+): Promise<CompleteChatResponse> => {
+  return executeApiRequest<CompleteChatArgs, CompleteChatResponse>({
+    args,
+    cancelToken,
+    dispatch,
+    url: completeChatApiEndpoint,
+  });
+};
+
+

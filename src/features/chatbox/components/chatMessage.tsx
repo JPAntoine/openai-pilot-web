@@ -1,12 +1,8 @@
 import React from 'react';
 import PulseLoader from 'react-spinners/PulseLoader';
 import UserIcon from '../../userIcon/userIcon';
-import { CitationList } from './citationsList';
-import { openModal, setPdf } from '../../pdfModal/pdfModalSlice';
 import { MarkdownWrapper } from './markdownWrapper';
 import { Message } from '../api/chatService';
-
-
 
 interface ChatMessageProps {
   message: Omit<Message, 'conversationId'>;
@@ -36,10 +32,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, className }) => {
             <PulseLoader className="loader-primary" size={5} loading />
           ) : (
             <>
-              <MarkdownWrapper content={message.content} />
-              {message.role === "assistant" && message.citations && message.citations.length > 0 && (
-                <CitationList citations={message.citations} setPdf={setPdf} openModal={openModal} />
-              )}
+              <MarkdownWrapper content={message.content} />              
             </>
           )}
         </div>

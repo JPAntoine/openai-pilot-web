@@ -1,12 +1,13 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-import eslintPlugin from 'vite-plugin-eslint';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path';
+
 
 export default defineConfig(() => {
   return {
     build: {
       outDir: "build",
+      sourcemap: true,
     },
     server: {
       open: true,
@@ -18,7 +19,6 @@ export default defineConfig(() => {
     },
     plugins: [
       react(),
-      eslintPlugin({ /* Plugin options here, if any */ }),
     ],
     test: {
       globals: true,

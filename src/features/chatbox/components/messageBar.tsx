@@ -20,9 +20,10 @@ const MessageBar: React.FC<MessageBarProps> = ({
   setValue,
   stopGeneration,
 }) => {
-  const { isProcessingCompletion, userRetryCountdown } = useSelector((state: RootState) => ({
+  const { isProcessingCompletion, userRetryCountdown, finalCountdown } = useSelector((state: RootState) => ({
     isProcessingCompletion: state.conversation.isProcessingCompletion,
-    userRetryCountdown: state.retry.userRetryCountdown, // Assuming `retry` slice exists
+    userRetryCountdown: state.retry.userRetryCountdown, 
+    finalCountdown: state.retry.finalCountdown
   }));
   const [anchor, setAnchor] = useState<HTMLDivElement | null>(null);
 
@@ -73,7 +74,7 @@ const MessageBar: React.FC<MessageBarProps> = ({
           <button
             className="flex max-w-min items-center justify-center gap-1 border-none p-2 text-sm h-12 w-full rounded-lg border border-text-primary text-text-primary transition-colors duration-300 disabled:border-gray-500 disabled:text-gray-500"
             onClick={onSubmit}
-            disabled={userRetryCountdown > 0 || isProcessingCompletion}
+            disabled={userRetryCountdown > 0 || isProcessingCompletion || finalCountdown > 0}
           >
             <div className="text-sm">Send</div>
             <PaperPlane className="ml-1 h-4 w-4" />

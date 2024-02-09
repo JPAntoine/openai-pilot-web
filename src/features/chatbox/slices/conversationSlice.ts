@@ -1,4 +1,4 @@
-import { RootState } from "@/app/store";
+import { AppDispatch, RootState } from "@/app/store";
 import {
   Conversation,
   GenerateTitleArgs,
@@ -7,24 +7,27 @@ import {
 
 import * as api from "@/features/chatbox/api/chatService";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CancelToken } from "axios";
 
 // Async thunks
 export const generateTitleThunk = createAsyncThunk(
   "conversation/generateTitle",
   async ({
     args,
-    signal,
+    cancelToken,
+    dispatch,
   }: {
     args: GenerateTitleArgs;
-    signal: AbortSignal;
+    cancelToken: CancelToken;
+    dispatch: AppDispatch;
   }) => {
-    return await api.generateTitle(args, signal);
+    return await api.generateTitle(args, cancelToken, dispatch);
   }
 );
 
 export const completeChatThunk = createAsyncThunk(
   'conversation/completeChat',
-  async ({ signal }: { signal: AbortSignal }, { getState }) => {
+  async ({ cancelToken, dispatch }: { cancelToken: CancelToken, dispatch: AppDispatch }, { getState }) => {
     const state = getState() as RootState; 
     const conversationState = state.conversation;
     const newMsg: Message = {
@@ -39,28 +42,28 @@ export const completeChatThunk = createAsyncThunk(
       messages: [...conversationState.conversation.messages, newMsg],
       conversationId: conversationState.activeConversationId || Math.random().toString(36).substring(7),
     };
-    return await api.completeChat(payload, signal);      
+    return await api.completeChat(payload, cancelToken, dispatch);      
   }
 );
 
-interface ConversationState {
+export interface ConversationState {
   activeConversationId: string;
   isProcessingCompletion: boolean;
   inFlightMessage: string;
   pendingMessage: string;
-  hasError: boolean;
+  hasCompletionError: boolean;
   isLoading: boolean;
   conversation: Conversation;
   userInput: string;
   conversations: Conversation[];
 }
 
-const initialState: ConversationState = {
+export const initialState: ConversationState = {
   activeConversationId: "",
   isProcessingCompletion: false,
   inFlightMessage: "",
   pendingMessage: "",
-  hasError: false,
+  hasCompletionError: false,
   isLoading: false,
   userInput: "",
   conversation: {
@@ -95,11 +98,14 @@ const conversationSlice = createSlice({
     setInFlightMessage: (state, action: PayloadAction<string>) => {
       state.inFlightMessage = action.payload;
     },
-    setHasError: (state, action: PayloadAction<boolean>) => {
-      state.hasError = action.payload;
+    setHasCompletionError: (state) => {
+      state.hasCompletionError = true;
     },
     setUserInput: (state, action: PayloadAction<string>) => {
       state.userInput = action.payload;
+    },
+    setPendingMessage: (state, action: PayloadAction<string>) => {
+      state.pendingMessage = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -113,14 +119,17 @@ const conversationSlice = createSlice({
     .addCase(completeChatThunk.pending, (state) => {
       state.isLoading = true;
       state.isProcessingCompletion = true;
-      state.hasError = false;
       state.inFlightMessage = state.userInput;
       state.pendingMessage = state.userInput;
       state.userInput = "";
+      if (state.hasCompletionError) {
+        state.conversation.messages.pop();
+      }
     })
     .addCase(completeChatThunk.fulfilled, (state, action) => {
       state.activeConversationId = action.payload.conversationId;
-      // push the users message to the conversation
+      state.hasCompletionError = false;
+      //push the users message to the conversation
       state.conversation.messages.push({
         content: state.inFlightMessage,
         role: "user",
@@ -128,7 +137,6 @@ const conversationSlice = createSlice({
         conversationId: state.activeConversationId, 
         createdAt: new Date().toISOString(),
       });
-
       // push the bots message to the conversation
       state.conversation.messages.push({
         ...action.payload.message,
@@ -153,7 +161,10 @@ const conversationSlice = createSlice({
     })
     .addCase(completeChatThunk.rejected, (state) => {
       state.isLoading = false;
-      state.hasError = true;
+      state.hasCompletionError = true;
+      state.isProcessingCompletion = false;
+      state.inFlightMessage = "";
+      state.userInput = state.pendingMessage;
     });
   },
 });
@@ -162,8 +173,9 @@ export const {
   setActiveConversationId,
   setIsProcessingCompletion,
   setInFlightMessage,
-  setHasError,
-  setUserInput
+  setHasCompletionError,
+  setUserInput,
+  setPendingMessage
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

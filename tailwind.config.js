@@ -21,11 +21,11 @@ module.exports = {
       colors: {
         background: "#F4F5F7", //main background color
         "footer-tertiary": "#66717F",
-        primary: "#007AA3",
+        primary: "#1F57A5",
         "text-primary": "#202427",
         secondary: "#E5F5F8",
         "text-link": "#0000EE",
-        "accent-1": "#00A2C7", //mostly used as background for chat history and chat input
+        "accent-1": "#639DDF", //mostly used as background for chat history and chat input
       },
       gap: {
         9.5: "2.375rem",

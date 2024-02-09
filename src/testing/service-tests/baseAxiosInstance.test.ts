@@ -1,7 +1,7 @@
 import MockAdapter from "axios-mock-adapter";
 import { baseAxiosInstance } from "@/app/base-api";
-import { RetryTimes } from "@/app/constants";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 
 // Mock "react-redux" module
@@ -30,14 +30,13 @@ vi.mock('@azure/msal-browser', () => ({
     })),
   }));
 
-describe("baseAxiosInstance with retry logic", () => {
+describe("baseAxiosInstance", () => {
   let mock: MockAdapter;
   let mockDispatch: any;
 
   beforeEach(() => {
     // Initialize the MockAdapter with the axios instance
-    mock = new MockAdapter(baseAxiosInstance);
-    // Clear mocks and setup
+    mock = new MockAdapter(baseAxiosInstance);// Clear mocks and setup
     mockDispatch = vi.fn();
     vi.mocked(useDispatch).mockReturnValue(mockDispatch); // Corrected mock syntax
   });
@@ -57,27 +56,28 @@ describe("baseAxiosInstance with retry logic", () => {
     expect(mock.history.get.length).toBe(1);
   });
 
-  it("should retry the request on a 503 status code and eventually succeed", async () => {
-    mock
-      .onGet("/test")
-      .replyOnce(503)
-      .onGet("/test")
-      .reply(200, { data: "success after retry" });
+  it("should fail a GET request due to invalid token", async () => {
+    // Simulate a 401 Unauthorized response to indicate an invalid or expired token
+    mock.onGet("/test").reply(401, { message: "Unauthorized" });
 
-    const response = await baseAxiosInstance.get("/test");
-
-    expect(response.data).toEqual({ data: "success after retry" });
-    expect(response.config.headers["Authorization"]).toEqual(`Bearer mock_access_token`)
-    // Check that the request was retried the correct number of times
-    expect(mock.history.get.length).toBe(2);
+    try {
+        await baseAxiosInstance.get("/test");
+        // If the request does not throw, force the test to fail
+        expect(true).toBe(false);
+    } catch (error) {
+        // Assuming error is an instance of AxiosError
+        if (axios.isAxiosError(error)) {
+            // Verify that the request was made and failed as expected
+            expect(error.response?.status).toEqual(401);
+            expect(error.response?.data).toEqual({ message: "Unauthorized" });
+            // Check that the interceptor attempted to authorize the request
+            expect(error?.config?.headers["Authorization"]).toEqual(`Bearer mock_access_token`);
+            // Verify that no retry attempts were made (assuming retry logic might be implemented)
+            expect(mock.history.get.length).toBe(1);
+        } else {
+            // If the error is not an AxiosError, force the test to fail
+            expect(true).toBe(false);
+        }
+    }
   });
-
-  it("should stop retrying after reaching the maximum retry limit", async () => {
-    mock.onGet("/test").reply(503);
-
-    await expect(baseAxiosInstance.get("/test")).rejects.toThrow();
-    // +1 accounts for the initial request
-    expect(mock.history.get.length).toBe(RetryTimes.MAX_RETRY_DURATION + 1);
-  });
-
 });

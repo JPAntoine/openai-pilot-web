@@ -17,7 +17,7 @@ const ActiveUserWrapper: React.FC<{ children: React.ReactNode }> = ({
     const account = accounts.find(
       (account) =>
         account.username.toLowerCase().endsWith("@neudesic.com") ||
-        account.username.toLowerCase().endsWith("@companyaltemail.com")
+        account.username.toLowerCase().endsWith("@nwnatural.com")
     );
 
     if (account) {

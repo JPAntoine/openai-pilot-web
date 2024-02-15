@@ -106,6 +106,12 @@ const conversationSlice = createSlice({
     },
     setPendingMessage: (state, action: PayloadAction<string>) => {
       state.pendingMessage = action.payload;
+    },
+    setReadyState: (state) => {
+        state.inFlightMessage = "",
+        state.pendingMessage = "",
+        state.isLoading = false,
+        state.isProcessingCompletion = false
     }
   },
   extraReducers: (builder) => {
@@ -175,7 +181,8 @@ export const {
   setInFlightMessage,
   setHasCompletionError,
   setUserInput,
-  setPendingMessage
+  setPendingMessage,
+  setReadyState
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

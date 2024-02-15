@@ -6,7 +6,6 @@ import { ClipLoader } from "react-spinners";
 import { RootState, AppDispatch } from "@/app/store";
 import {
   completeChatThunk,
-  generateTitleThunk,
   setPendingMessage,
   setUserInput,
 } from "../slices/conversationSlice";
@@ -40,21 +39,8 @@ const ChatBox: React.FC<object> = () => {
     backendUnavailable,
     userRetryCountdown,
     finalCountdown,
-  } = useSelector((state: RootState) => state.retry);
-  
-  useEffect(() => {
-    if (
-      conversation.messages.length >= 2 &&
-      !conversation.title &&
-      activeConversationId
-    ) {
-
-        const source = axios.CancelToken.source();
-        setGenerateTitleCancelTokenSource(source); 
-        dispatch(generateTitleThunk({ args: { conversationId: activeConversationId}, cancelToken: source.token, dispatch: dispatch}));     
-    }
-  }, [conversation.messages.length, activeConversationId, conversation.title]);
-
+  } = useSelector((state: RootState) => state.retry);  
+ 
   useEffect(() => {
     if (backendUnavailable && !pendingMessage){
       dispatch(setPendingMessage(inFlightMessage));
@@ -94,7 +80,7 @@ const ChatBox: React.FC<object> = () => {
               role: "assistant",
               content: `Hi there ${
                 user?.name?.split(" ")[0]
-              }! I'm a chatbot powered by GPT-3.5. You can ask me anything you'd like, and I'll do my best to provide a helpful response.`,
+              }! I'm a GPT powered chatbot. You can ask me anything you'd like, and I'll do my best to provide a helpful response.`,
             }}
           />
         </div>
@@ -118,7 +104,7 @@ const ChatBox: React.FC<object> = () => {
             ) : (
               <div className="font-bold italic">
                 System is currently unavailable. Please enter your question
-                again in { Math.floor(finalCountdown/60) } minutes.
+                again in { Math.ceil(finalCountdown/60) } minutes.
               </div>
             )}
           </div>

@@ -1,7 +1,6 @@
 import UserIcon from './features/userIcon/userIcon';
 import MainContent from './features/mainContent/mainContentWrapper';
 import Header from './features/header/header';
-import Sidebar from './features/sidebar/Sidebar';
 
 function App() {
 
@@ -16,7 +15,7 @@ function App() {
       <UserIcon className="ml-auto h-8 w-8 block" />
     </Header>
     <div className="gap-9.5 flex h-full min-h-0 min-w-0">     
-      <Sidebar />
+
       <MainContent />
     </div>
   </div>

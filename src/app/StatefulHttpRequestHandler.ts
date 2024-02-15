@@ -1,4 +1,4 @@
-import { setHasCompletionError } from "@/features/chatbox/slices/conversationSlice";
+import { setHasCompletionError, setReadyState } from "@/features/chatbox/slices/conversationSlice";
 import {
   resetRetryState,
   setBackendUnavailable,
@@ -84,6 +84,7 @@ export async function executeApiRequest<T, R>({
       } else {
         clearInterval(intervalId);
         dispatch(resetRetryState());
+        dispatch(setReadyState())
         dispatch(setBackendUnavailable(false));
         return;
       }

@@ -1,10 +1,9 @@
 // MessageBar.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { PulseLoader } from 'react-spinners';
 import UserIcon from '@/features/userIcon/userIcon';
 import { PaperPlane } from '@/icons';
-import FloatingButton from '@/features/shared/buttons/FloatingButton';
 import { RootState } from '@/app/store';
 import { useSelector } from 'react-redux';
 interface MessageBarProps {
@@ -18,14 +17,12 @@ const MessageBar: React.FC<MessageBarProps> = ({
   onSubmit,
   value,
   setValue,
-  stopGeneration,
 }) => {
   const { isProcessingCompletion, userRetryCountdown, finalCountdown } = useSelector((state: RootState) => ({
     isProcessingCompletion: state.conversation.isProcessingCompletion,
     userRetryCountdown: state.retry.userRetryCountdown, 
     finalCountdown: state.retry.finalCountdown
   }));
-  const [anchor, setAnchor] = useState<HTMLDivElement | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
@@ -41,21 +38,11 @@ const MessageBar: React.FC<MessageBarProps> = ({
   return (
     <div
       className="bg-secondary flex w-full items-center gap-2 rounded-md px-8 py-2 mt-auto shadow-custom"
-      ref={setAnchor}
+      
     >
       <div>
         <UserIcon className="h-8 w-8" />
       </div>
-      {isProcessingCompletion && userRetryCountdown === 0 && (
-        <FloatingButton
-          anchor={anchor}
-          onClick={() => stopGeneration && stopGeneration()}
-        >
-          <span className="px-2 text-[1.0625rem] leading-5 font-sf font-bold text-text-primary">
-            Stop Generating
-          </span>
-        </FloatingButton>
-      )}
       <TextareaAutosize
         maxRows={8}
         value={value}

@@ -21,27 +21,35 @@ if (!rootNode) throw new Error("Failed to find the root element");
 
 const root = ReactDOM.createRoot(rootNode);
 
+console.log(process.env.NODE_ENV)
+
 root.render(
   <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <MsalAuthenticationTemplate
-        interactionType={InteractionType.Redirect}
-        authenticationRequest={authRequest}
-        errorComponent={() => (
-          <FullScreenText>Authentication Error</FullScreenText>
-        )}
-        loadingComponent={() => (
-          <FullScreenText showSpinner={true}>
-            Checking Authorization
-          </FullScreenText>
-        )}
-      >
-        <ActiveUserWrapper>
-          <Provider store={store}>
-            <App />
-          </Provider>
-        </ActiveUserWrapper>
-      </MsalAuthenticationTemplate>
-    </MsalProvider>
+    {process.env.NODE_ENV !== "development" ? (
+      <MsalProvider instance={msalInstance}>
+        <MsalAuthenticationTemplate
+          interactionType={InteractionType.Redirect}
+          authenticationRequest={authRequest}
+          errorComponent={() => (
+            <FullScreenText>Authentication Error</FullScreenText>
+          )}
+          loadingComponent={() => (
+            <FullScreenText showSpinner={true}>
+              Checking Authorization
+            </FullScreenText>
+          )}
+        >
+          <ActiveUserWrapper>
+            <Provider store={store}>
+              <App />
+            </Provider>
+          </ActiveUserWrapper>
+        </MsalAuthenticationTemplate>
+      </MsalProvider>
+    ) : (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    )}
   </React.StrictMode>
 );

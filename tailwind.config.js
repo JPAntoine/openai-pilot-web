@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defaultTheme = require("tailwindcss/defaultTheme");
+import DTEColors from './src/assets/colors/DTEColors';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -26,6 +27,7 @@ module.exports = {
         secondary: "#E5F5F8",
         "text-link": "#0000EE",
         "accent-1": "#639DDF", //mostly used as background for chat history and chat input
+        ...DTEColors,
       },
       gap: {
         9.5: "2.375rem",

@@ -15,9 +15,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, className }) => {
     } ${className || ""}`;
   
     const renderAvatar = () => (
-      <div className="h-10 w-10 flex-shrink-0 self-start">
+      <div className="h-10 w-10 flex-shrink-0 self-start flex items-center rounded-md bg-White overflow-hidden">
         {message.role === "assistant" ? (
-          <img src="bot-avatar.png" className="border-sce-grey-800 rounded-md" alt="bot avatar" />
+          <img src="DTE-primary.png" alt="bot avatar" />
         ) : (
           <UserIcon className="h-10 w-10" />
         )}

@@ -40,3 +40,5 @@ export const getToken: () => Promise<string | null> = async () => {
 };
 
 export default msalInstance;
+
+//https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize
